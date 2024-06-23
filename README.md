@@ -4,7 +4,7 @@
 
 ## Como usar
 
-Acesse a [GitHub Pages](https://pages.github.com/) para visualizar e publicar seu projeto.
+Acesse a [GitHub Pages](https://pages.github.com/) para utilizar o projeto.
 
 ## Descrição
 
@@ -12,9 +12,9 @@ Este projeto foi desenvolvido para facilitar a visualização de gráficos PERT/
 
 ## Autores
 
-- Douglas Sermarini
-- Stephenson Oliveira
-- Joseíto de Oliveira Júnior
+- [Douglas Sermarini](https://github.com/Douglas019BR)
+- [Stephenson Oliveira](https://github.com/stephensonsn)
+- [Joseíto de Oliveira Júnior](https://github.com/JoseitoOliveira)
 
 ## Tecnologias Utilizadas
 
