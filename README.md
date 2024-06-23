@@ -1,10 +1,10 @@
 # PERT CPM Graph
 
-![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?style=flat-square)
+[![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?style=flat-square)](https://stephensonsn.github.io/engenharia_software_tools)
 
 ## Como usar
 
-Acesse a [GitHub Pages](https://pages.github.com/) para utilizar o projeto.
+Acesse a [GitHub Pages](https://stephensonsn.github.io/engenharia_software_tools) para utilizar o projeto.
 
 ## Descrição
 
