@@ -2,11 +2,13 @@
 
 ![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?style=flat-square)
 
+## Como usar
+
+Acesse a [GitHub Pages](https://pages.github.com/) para visualizar e publicar seu projeto.
+
 ## Descrição
 
-Este projeto foi desenvolvido para facilitar a visualização de gráficos PERT/CPM, utilizando Python e bibliotecas como `matplotlib` e `networkx`, integradas com Pyodide para execução no navegador. A ideia surgiu a partir de uma dificuldade encontrada na disciplina de Gerenciamento de Projetos (INF333) do curso de pós-graduação em Engenharia de Software da Unicamp no ano de 2024.
-![Unicamp](https://www.unicamp.br/unicamp/sites/default/files/field/image/brasao_unicamp.jpg)
-
+Este projeto foi desenvolvido para facilitar a visualização de gráficos PERT/CPM, utilizando Python e bibliotecas como [`matplotlib`](https://matplotlib.org/) e [`networkx`](https://networkx.org/), integradas com [`Pyodide`](https://pyodide.org/en/stable/) para execução no navegador. A ideia surgiu a partir de uma dificuldade encontrada na disciplina de Gerenciamento de Projetos (INF333) do curso de pós-graduação em Engenharia de Software da Unicamp no ano de 2024.
 
 ## Autores
 
@@ -14,13 +16,12 @@ Este projeto foi desenvolvido para facilitar a visualização de gráficos PERT/
 - Stephenson Oliveira
 - Joseíto de Oliveira Júnior
 
-
 ## Tecnologias Utilizadas
 
-- Python(https://www.python.org/)
-- Pyodide(https://pyodide.org/en/stable/)
-- Matplotlib (https://matplotlib.org/)
-- NetworkX (https://networkx.org/)
+- [Python](https://www.python.org/)
+- [Pyodide](https://pyodide.org/en/stable/)
+- [Matplotlib](https://matplotlib.org/)
+- [NetworkX](https://networkx.org/)
 - JavaScript
 - HTML5
 - CSS3
@@ -35,4 +36,4 @@ Contribuições são bem-vindas! Se você deseja colaborar com este projeto, sig
 4. Faça push para a branch: `git push origin minha-feature`
 5. Abra um Pull Request.
 
-
+---
