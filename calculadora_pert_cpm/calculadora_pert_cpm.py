@@ -1,67 +1,174 @@
-import networkx as nx
-import matplotlib.pyplot as plt
+import js
+from pyodide.ffi import create_proxy
+import micropip
 
-def get_activity_data():
-    num_activities = int(input("Digite o número de atividades: "))
-    activities = {}
-    
+async def load_packages():
+    await micropip.install("matplotlib")
+    await micropip.install("networkx")
+    await micropip.install("pillow")
+
+async def get_activity_data(event):
+    await load_packages()
+    num_activities = int(js.document.getElementById("num_activities").value)
+    activities_input_div = js.document.getElementById("activities_input")
+    activities_input_div.innerHTML = ""
+
+    table = js.document.createElement("table")
+    table.setAttribute("id", "activities_table")
+
+    header = js.document.createElement("tr")
+    headers = ["Atividade", "Duração", "Predecessores"]
+    for h in headers:
+        th = js.document.createElement("th")
+        th.innerText = h
+        header.appendChild(th)
+    table.appendChild(header)
+
     for i in range(num_activities):
-        activity = input(f"Digite a atividade {i+1}: ")
-        duration = int(input(f"Digite a duração da atividade {activity}: "))
-        predecessors = input(f"Digite os predecessores da atividade {activity} (separados por vírgula, deixe em branco se não houver): ")
-        predecessors = predecessors.split(',') if predecessors else []
+        row = js.document.createElement("tr")
+
+        activity_input = js.document.createElement("input")
+        activity_input.setAttribute("type", "text")
+        activity_input.setAttribute("id", f"activity_{i}")
+
+        duration_input = js.document.createElement("input")
+        duration_input.setAttribute("type", "number")
+        duration_input.setAttribute("id", f"duration_{i}")
+
+        predecessors_input = js.document.createElement("input")
+        predecessors_input.setAttribute("type", "text")
+        predecessors_input.setAttribute("id", f"predecessors_{i}")
+
+        activity_td = js.document.createElement("td")
+        duration_td = js.document.createElement("td")
+        predecessors_td = js.document.createElement("td")
+
+        activity_td.appendChild(activity_input)
+        duration_td.appendChild(duration_input)
+        predecessors_td.appendChild(predecessors_input)
+
+        row.appendChild(activity_td)
+        row.appendChild(duration_td)
+        row.appendChild(predecessors_td)
+
+        table.appendChild(row)
+
+    activities_input_div.appendChild(table)
+
+    submit_activities_button = js.document.createElement("button")
+    submit_activities_button.innerText = "Submit Activities Data"
+    submit_activities_button.addEventListener("click", create_proxy(create_graph))
+    activities_input_div.appendChild(submit_activities_button)
+
+def create_graph(event):
+    import matplotlib.pyplot as plt
+    import networkx as nx
+    from io import BytesIO
+    import base64
+    from PIL import Image
+
+    num_activities = int(js.document.getElementById("num_activities").value)
+    activities = {}
+
+    for i in range(num_activities):
+        activity = js.document.getElementById(f"activity_{i}").value
+        duration = int(js.document.getElementById(f"duration_{i}").value)
+        predecessors = js.document.getElementById(f"predecessors_{i}").value
+        predecessors = [pred.strip() for pred in predecessors.split(',')] if predecessors else []
         activities[activity] = {"duration": duration, "predecessors": predecessors}
-    
-    return activities
 
-def create_graph(activities):
-    G = nx.DiGraph()
-    
-    for activity, data in activities.items():
-        G.add_node(activity, duration=data["duration"])
-        for pred in data["predecessors"]:
-            G.add_edge(pred.strip(), activity)
-    
-    return G
+    early_start, early_finish, late_start, late_finish = calculate_pert_cpm(activities)
+    display_pert_cpm(activities, early_start, early_finish, late_start, late_finish)
+    plot_pert_cpm(activities, early_start, late_start)
 
-def calculate_pert_cpm(G):
+def calculate_pert_cpm(activities):
     early_start = {}
     early_finish = {}
     late_start = {}
     late_finish = {}
-    
-    for node in nx.topological_sort(G):
-        es = max([early_finish[pred] for pred in G.predecessors(node)], default=0)
-        early_start[node] = es
-        early_finish[node] = es + G.nodes[node]['duration']
-    
-    for node in reversed(list(nx.topological_sort(G))):
-        lf = min([late_start[succ] for succ in G.successors(node)], default=max(early_finish.values()))
-        late_finish[node] = lf
-        late_start[node] = lf - G.nodes[node]['duration']
-    
+
+    sorted_activities = []
+    while len(sorted_activities) < len(activities):
+        for activity in activities:
+            if activity not in sorted_activities and all(pred in sorted_activities for pred in activities[activity]["predecessors"]):
+                sorted_activities.append(activity)
+
+    for activity in sorted_activities:
+        es = max([early_finish[pred] for pred in activities[activity]["predecessors"]], default=0)
+        early_start[activity] = es
+        early_finish[activity] = es + activities[activity]['duration']
+
+    for activity in reversed(sorted_activities):
+        lf = min([late_start[succ] for succ in activities if activity in activities[succ]["predecessors"]], default=max(early_finish.values()))
+        late_finish[activity] = lf
+        late_start[activity] = lf - activities[activity]['duration']
+
     return early_start, early_finish, late_start, late_finish
 
 def display_pert_cpm(activities, early_start, early_finish, late_start, late_finish):
-    print("\nActivity\tES\tEF\tLS\tLF")
+    output_div = js.document.getElementById("output")
+    output_div.innerHTML = ""
+
+    table = js.document.createElement("table")
+    header = js.document.createElement("tr")
+
+    headers = ["Activity", "ES", "EF", "LS", "LF"]
+    for h in headers:
+        th = js.document.createElement("th")
+        th.innerText = h
+        header.appendChild(th)
+    table.appendChild(header)
+
     for activity in activities:
-        print(f"{activity}\t\t{early_start[activity]}\t{early_finish[activity]}\t{late_start[activity]}\t{late_finish[activity]}")
-    
+        row = js.document.createElement("tr")
+        cells = [activity, early_start[activity], early_finish[activity], late_start[activity], late_finish[activity]]
+        for cell in cells:
+            td = js.document.createElement("td")
+            td.innerText = cell
+            row.appendChild(td)
+        table.appendChild(row)
+
+    output_div.appendChild(table)
+
     critical_path = [activity for activity in activities if early_start[activity] == late_start[activity]]
-    print(f"\nCaminho Crítico: {' -> '.join(critical_path)}")
+    critical_path_div = js.document.createElement("div")
+    critical_path_div.innerText = f"\nCaminho Crítico: {' -> '.join(critical_path)}"
+    output_div.appendChild(critical_path_div)
 
-def plot_pert_cpm(G, early_start, late_start):
+def plot_pert_cpm(activities, early_start, late_start):
+    import matplotlib.pyplot as plt
+    import networkx as nx
+    from io import BytesIO
+    import base64
+
+
+    G = nx.DiGraph()
+
+    for activity, data in activities.items():
+        G.add_node(activity, duration=data["duration"], ES=early_start[activity], LS=late_start[activity])
+        for pred in data["predecessors"]:
+            G.add_edge(pred, activity)
+
     pos = nx.spring_layout(G)
-    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=2000, font_size=10, font_weight='bold')
-    
-    labels = {node: f"{node}\nES: {early_start[node]}\nLS: {late_start[node]}" for node in G.nodes}
-    nx.draw_networkx_labels(G, pos, labels, font_size=8)
-    
-    plt.show()
+    plt.figure(figsize=(12, 8))
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=3000, font_size=10, font_weight='bold')
 
-if __name__ == "__main__":
-    activities = get_activity_data()
-    G = create_graph(activities)
-    early_start, early_finish, late_start, late_finish = calculate_pert_cpm(G)
-    display_pert_cpm(activities, early_start, early_finish, late_start, late_finish)
-    plot_pert_cpm(G, early_start, late_start)
+    labels = {node: f"{node}\nES: {G.nodes[node]['ES']}\nLS: {G.nodes[node]['LS']}" for node in G.nodes}
+    nx.draw_networkx_labels(G, pos, labels, font_size=8)
+
+    # Save the figure to a buffer
+    buf = BytesIO()
+    plt.savefig(buf, format='jpeg')
+    buf.seek(0)
+
+    # Convert the buffer to a data URL
+    data_url = "data:image/jpeg;base64," + base64.b64encode(buf.read()).decode('utf-8')
+
+    # Display the image
+    graph_div = js.document.getElementById("graph")
+    graph_div.innerHTML = ""
+    img_element = js.document.createElement("img")
+    img_element.setAttribute("src", data_url)
+    graph_div.appendChild(img_element)
+
+js.document.getElementById("submit_activities").addEventListener("click", create_proxy(get_activity_data))

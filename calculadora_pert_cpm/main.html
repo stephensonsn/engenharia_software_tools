@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PERT/CPM with PyScript</title>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <style>
+        #graph {
+            width: 25%;
+        }
+    </style>
+</head>
+<body>
+    <h1>PERT/CPM with PyScript</h1>
+
+    <div>
+        <label for="num_activities">Digite o número de atividades: </label>
+        <input type="number" id="num_activities">
+        <button id="submit_activities">Submit</button>
+    </div>
+
+    <div id="activities_input"></div>
+
+    <div id="output"></div>
+    <div id="graph"></div>
+
+    <py-script src="./main.py"></py-script>
+</body>
+</html>
