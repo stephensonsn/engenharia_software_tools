@@ -1,6 +1,9 @@
 # PERT CPM Graph
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?style=flat-square)](https://stephensonsn.github.io/engenharia_software_tools)
+[![Python](https://img.shields.io/badge/Python-3-blue?style=flat-square)](https://www.python.org/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![HTML](https://img.shields.io/badge/HTML-5-orange?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 
 ## Como usar
 
